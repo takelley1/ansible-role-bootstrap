@@ -1,0 +1,83 @@
+---
+
+- name: SSH | Directories exist.
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    owner: "{{ item.owner }}"
+    group: "{{ item.owner }}"
+    mode: "0700"
+    state: directory
+  loop:
+    - path: "{{ home }}/.ssh"
+      owner: "{{ username }}"
+    - path: /root/.ssh
+      owner: root
+    - path: "{{ ansible_home_dir }}/.ssh"
+      owner: ansible
+
+- name: SSH | Keys present.
+  ansible.builtin.template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: "{{ item.owner }}"
+    group: "{{ item.owner }}"
+    mode: "{{ item.mode }}"
+  loop:
+
+    # Private keys
+    - src: keys/id_rsa
+      dest: "{{ home }}/.ssh/id_rsa"
+      owner: "{{ username }}"
+      mode: "0400"
+    - src: keys/id_rsa
+      dest: /root/.ssh/id_rsa
+      owner: root
+      mode: "0400"
+    - src: keys/id_rsa
+      dest: "{{ ansible_home_dir }}/.ssh/id_rsa"
+      owner: ansible
+      mode: "0400"
+
+    # Public keys
+    - src: keys/id_rsa.pub
+      dest: "{{ home }}/.ssh/id_rsa.pub"
+      owner: "{{ username }}"
+      mode: "0640"
+    - src: keys/id_rsa.pub
+      dest: /root/.ssh/id_rsa.pub
+      owner: root
+      mode: "0640"
+
+- name: SSH | Key login authorized.
+  ansible.posix.authorized_key:
+    user: "{{ item }}"
+    state: present
+    key: "{{ lookup('file', './keys/id_rsa.pub') }}"
+  loop:
+    - "{{ username }}"
+    - ansible
+
+#- name: SSH | Determine SSHD service name.
+#  block:
+#    - name: SSH | Get services.
+#      service_facts:
+#
+#    - name: SSH | Set SSHD service name fact.
+#      set_fact:
+#        sshd_service_name: sshd
+#      when:
+#        - ansible_facts.services['sshd.service'] is defined
+#        - ansible_facts.services['sshd.service'].state == "running"
+
+- name: SSH | SSHD enabled and running.
+  ansible.builtin.service:
+    name: "{{ sshd_service_name }}"
+    state: started
+    enabled: true
+
+- name: SSH | Root disallowed from SSH login.
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: ^PermitRootLogin yes
+    line: "#PermitRootLogin yes"
+  notify: restart-sshd

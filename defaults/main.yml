@@ -1,0 +1,13 @@
+---
+
+timezone: America/New_York
+
+python_pacman_package_name: python
+python_pkg_package_name: python3
+
+sshd_service_name: sshd
+
+base_include_bootstrap_tasks: true
+base_include_time_tasks: true
+base_include_user_tasks: true
+base_include_ssh_tasks: true

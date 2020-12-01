@@ -1,0 +1,53 @@
+---
+
+- name: USERS | Determine the sudo users group name.
+  shell: grep -oE "wheel|sudo" "/etc/group" | head -1
+  changed_when: false
+  register: sudo_group_name
+
+- name: USERS | User groups exist.
+  ansible.builtin.group:
+    name: "{{ item }}"
+  loop:
+    - ansible
+    - "{{ username }}"
+
+- name: USERS | Users exist.
+  ansible.builtin.user:
+    name: "{{ item.name }}"
+    comment: "{{ item.comment }}"
+    group:  "{{ item.name }}"
+    groups:  "{{ item.groups }}"
+    home: "{{ item.home | default(omit) }}"
+  loop:
+    - name: ansible
+      comment: Ansible service account
+      group: ansible
+      groups: "{{ sudo_group_name.stdout }}"
+      home: "{{ ansible_home_dir }}"
+
+    - name: "{{ username }}"
+      comment: "{{ user_comment | default(omit) }}"
+      group: "{{ username }}"
+      groups: "{{ sudo_group_name.stdout }}"
+
+- name: USERS | Sudoers configured.
+  ansible.builtin.lineinfile:
+    path: /etc/sudoers
+    line: "{{ item.line }}"
+    regexp: "{{ item.regexp }}"
+    insertbefore: "{{ item.insertbefore | default(omit) }}"
+    owner: root
+    group: root
+    mode: "0440"
+    validate: visudo -c -f %s
+  loop:
+    - line: "%{{ sudo_group_name.stdout }} ALL=(ALL) ALL"
+      regexp: ^\s*%{{ sudo_group_name.stdout }}\s*ALL=(ALL)\s*ALL\s*
+      insertbefore: BOF
+    - line: Defaults env_keep += "http_proxy HTTP_PROXY https_proxy HTTPS_PROXY no_proxy NO_PROXY npm_config_proxy"
+      regexp: ^\s*Defaults\s*env_keep\s*\+=\s*\"http_proxy\s*HTTP_PROXY\s*https_proxy\s*HTTPS_PROXY\s*no_proxy\s*NO_PROXY\s*npm_config_proxy\"\s*
+    - line: Defaults env_keep += "EDITOR VISUAL SUDO_EDITOR TERM PAGER BROWSER SHELL"
+      regexp: ^\s*Defaults\s*env_keep\s*\+=\s*\"EDITOR\s*VISUAL\s*SUDO_EDITOR\s*TERM\s*PAGER\s*BROWSER\s*SHELL\"\s*
+    - line: "ansible ALL= NOPASSWD: ALL"
+      regexp: ^\s*ansible\s*ALL=\s*NOPASSWD:\s*ALL\s*
