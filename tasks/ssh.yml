@@ -1,77 +1,69 @@
 ---
 
-- name: SSH | Directories exist.
-  ansible.builtin.file:
-    path: "{{ item.path }}"
-    owner: "{{ item.owner }}"
-    group: "{{ item.owner }}"
-    mode: "0700"
-    state: directory
-  loop:
-    - path: "{{ home }}/.ssh"
-      owner: "{{ username }}"
-    - path: /root/.ssh
-      owner: root
-    - path: "{{ ansible_home_dir }}/.ssh"
-      owner: ansible
+- name: SSH | SSH configured for interactive user.
+  block:
+    - name: SSH | User sirectories exist.
+      ansible.builtin.file:
+        path: "{{ user.home_dir }}/.ssh"
+        owner: "{{ user.username }}"
+        group: "{{ user.username }}"
+        mode: "0700"
+        state: directory
+    - name: SSH | User keys present.
+      ansible.builtin.template:
+        dest: "{{ item.dest }}"
+        owner: "{{ item.owner }}"
+        group: "{{ item.owner }}"
+        mode: "{{ item.mode }}"
+      loop:
+        - src: keys/user/id_rsa
+          dest: "{{ user.home_dir }}/.ssh/id_rsa"
+          owner: "{{ user.username }}"
+          mode: "0400"
+        - src: keys/user/id_rsa.pub
+          dest: "{{ user.home_dir }}/.ssh/id_rsa.pub"
+          owner: "{{ user.username }}"
+          mode: "0640"
+    - name: SSH | User key login authorized.
+      ansible.posix.authorized_key:
+        user: "{{ user.username }}"
+        key: "{{ lookup('file', './keys/user/id_rsa.pub') }}"
+  when:
+    - user is defined
+    - user.use_ssh_key
 
-- name: SSH | Keys present.
-  ansible.builtin.template:
-    src: "{{ item.src }}"
-    dest: "{{ item.dest }}"
-    owner: "{{ item.owner }}"
-    group: "{{ item.owner }}"
-    mode: "{{ item.mode }}"
-  loop:
+- name: SSH | SSH configured for service account.
+  block:
+    - name: SSH | Service account directories exist.
+      ansible.builtin.file:
+        path: "{{ service_account.home_dir }}/.ssh"
+        owner: "{{ service_account.username }}"
+        group: "{{ service_account.username }}"
+        mode: "0700"
+        state: directory
+    - name: SSH | Service account keys present.
+      ansible.builtin.template:
+        dest: "{{ item.dest }}"
+        owner: "{{ item.owner }}"
+        group: "{{ item.owner }}"
+        mode: "{{ item.mode }}"
+      loop:
+        - src: keys/service_account/id_rsa
+          dest: "{{ service_account.home_dir }}/.ssh/id_rsa"
+          owner: "{{ service_account.username }}"
+          mode: "0400"
+        - src: keys/service_account/id_rsa.pub
+          dest: "{{ service_account.home_dir }}/.ssh/id_rsa.pub"
+          owner: "{{ service_account.username }}"
+          mode: "0640"
+    - name: SSH | Service account key login authorized.
+      ansible.posix.authorized_key:
+        user: "{{ service_account.username }}"
+        key: "{{ lookup('file', './keys/service_account/id_rsa.pub') }}"
 
-    # Private keys
-    - src: keys/id_rsa
-      dest: "{{ home }}/.ssh/id_rsa"
-      owner: "{{ username }}"
-      mode: "0400"
-    - src: keys/id_rsa
-      dest: /root/.ssh/id_rsa
-      owner: root
-      mode: "0400"
-    - src: keys/id_rsa
-      dest: "{{ ansible_home_dir }}/.ssh/id_rsa"
-      owner: ansible
-      mode: "0400"
-
-    # Public keys
-    - src: keys/id_rsa.pub
-      dest: "{{ home }}/.ssh/id_rsa.pub"
-      owner: "{{ username }}"
-      mode: "0640"
-    - src: keys/id_rsa.pub
-      dest: /root/.ssh/id_rsa.pub
-      owner: root
-      mode: "0640"
-
-- name: SSH | Key login authorized.
-  ansible.posix.authorized_key:
-    user: "{{ item }}"
-    state: present
-    key: "{{ lookup('file', './keys/id_rsa.pub') }}"
-  loop:
-    - "{{ username }}"
-    - ansible
-
-#- name: SSH | Determine SSHD service name.
-#  block:
-#    - name: SSH | Get services.
-#      service_facts:
-#
-#    - name: SSH | Set SSHD service name fact.
-#      set_fact:
-#        sshd_service_name: sshd
-#      when:
-#        - ansible_facts.services['sshd.service'] is defined
-#        - ansible_facts.services['sshd.service'].state == "running"
-
-- name: SSH | SSHD enabled and running.
+- name: SSH | SSHD enabled.
   ansible.builtin.service:
-    name: "{{ sshd_service_name }}"
+    name: sshd
     state: started
     enabled: true
 

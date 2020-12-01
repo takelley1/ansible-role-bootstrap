@@ -1,13 +1,21 @@
 ---
 
+# Optionally create an interactive user for manually managing the
+#  target host.
+# user:
+#   - username: foo
+#     comment: Foo Bar
+#     home_dir: /home/foo
+#     use_ssh_key: true
+
 timezone: America/New_York
 
-python_pacman_package_name: python
-python_pkg_package_name: python3
+service_account:
+  - username: ansible
+    comment: Ansible service account
+    home_dir: /var/lib/ansible
 
-sshd_service_name: sshd
-
-base_include_bootstrap_tasks: true
+# Selectively include or exclude task files.
 base_include_time_tasks: true
 base_include_user_tasks: true
 base_include_ssh_tasks: true

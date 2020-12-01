@@ -1,9 +1,5 @@
 ---
 
-- name: MAIN | Attempt to bootstrap.
-  script: bootstrap.sh
-  when: base_include_bootstrap_tasks
-
 - name: MAIN | Import time.yml
   import_tasks: time.yml
   when: base_include_time_tasks

@@ -2,6 +2,6 @@
 
 - name: HANDLERS | SSHD restarted.
   service:
-    name: "{{ sshd_service_name }}"
+    name: sshd
     state: restarted
   listen: restart-sshd
