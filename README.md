@@ -1,13 +1,12 @@
-### Common "base" configuration to help bootstrap Unix-based target hosts.
+### Common "base" configuration to help bootstrap target hosts.
 
 ---
-
 What the target host needs before you can run this role against it:
    - Python installed (Most distros come with Python pre-installed).
    - SSHD service running (Most distros enable SSHD by default).
    - Root login allowed in `/etc/sshd_config` (This will be disabled by Ansible after connecting).
 
-You'll also need to add a set of SSH keys for to `keys/service_account/`.
+You'll also need to add a set of SSH keys to `keys/service_account/`.
 Ansible will use these keys to authenticate to the target host(s) after
 running this role successfully. Don't add a password to the key if you
 want more convenience when running subsequent playbooks.
