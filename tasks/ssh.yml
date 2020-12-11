@@ -2,7 +2,7 @@
 
 - name: SSH | SSH configured for interactive user.
   block:
-    - name: SSH | User sirectories exist.
+    - name: SSH | User directories exist.
       ansible.builtin.file:
         path: "{{ user.home_dir }}/.ssh"
         owner: "{{ user.username }}"
