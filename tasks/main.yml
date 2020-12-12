@@ -2,12 +2,12 @@
 
 - name: MAIN | Import misc.yml
   import_tasks: misc.yml
-  when: base_include_misc_tasks
+  when: bootstrap_include_misc_tasks
 
 - name: MAIN | Import users.yml
   import_tasks: users.yml
-  when: base_include_user_tasks
+  when: bootstrap_include_user_tasks
 
 - name: MAIN | Import ssh.yml
   import_tasks: ssh.yml
-  when: base_include_ssh_tasks
+  when: bootstrap_include_ssh_tasks
