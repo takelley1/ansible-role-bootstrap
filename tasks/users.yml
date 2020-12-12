@@ -5,32 +5,38 @@
   changed_when: false
   register: sudo_group_name
 
-- name: USERS | Interactive user exists.
+- name: USERS | Interactive account exists.
   block:
-    - name: USERS | Interactive user group exists.
+    - name: USERS | Interactive account group exists.
       ansible.builtin.group:
-        name: "{{ user.username }}"
-    - name: USERS | Interactive user exists.
+        name: "{{ item.username }}"
+      loop: "{{ interactive_account }}"
+
+    - name: USERS | Interactive account exists.
       ansible.builtin.user:
-        name: "{{ user.username }}"
-        comment: "{{ user.comment }}"
-        group: "{{ user.username }}"
+        name: "{{ item.username }}"
+        comment: "{{ item.comment }}"
+        group: "{{ item.username }}"
         groups: "{{ sudo_group_name.stdout }}"
-        home: "{{ user.home_dir }}"
-  when: user is defined
+        home: "{{ item.home_dir }}"
+      loop: "{{ interactive_account }}"
+  when: interactive_account is defined
 
 - name: USERS | Ansible service account exists.
   block:
     - name: USERS | Ansible group exists.
       ansible.builtin.group:
-        name: "{{ service_account.username }}"
+        name: "{{ item.username }}"
+      loop: "{{ service_account }}"
+
     - name: USERS | Ansible user exists.
       ansible.builtin.user:
-        name: "{{ service_account.username }}"
-        comment: "{{ service_account.comment }}"
-        group: "{{ service_account.username }}"
+        name: "{{ item.username }}"
+        comment: "{{ item.comment }}"
+        group: "{{ item.username }}"
         groups: "{{ sudo_group_name.stdout }}"
-        home: "{{ service_account.home_dir }}"
+        home: "{{ item.home_dir }}"
+      loop: "{{ service_account }}"
 
 - name: USERS | Sudoers configured.
   ansible.builtin.lineinfile:

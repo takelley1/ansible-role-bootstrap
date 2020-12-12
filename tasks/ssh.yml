@@ -4,15 +4,18 @@
   block:
     - name: SSH | User SSH directory exists.
       ansible.builtin.file:
-        path: "{{ user.home_dir }}/.ssh"
-        owner: "{{ user.username }}"
-        group: "{{ user.username }}"
+        path: "{{ item.home_dir }}/.ssh"
+        owner: "{{ item.username }}"
+        group: "{{ item.username }}"
         mode: "0700"
         state: directory
+      loop: "{{ interactive_user }}"
+
     - name: SSH | User key login authorized.
       ansible.posix.authorized_key:
-        user: "{{ user.username }}"
-        key: "{{ lookup('file', './keys/user/id_rsa.pub') }}"
+        user: "{{ item.username }}"
+        key: "{{ item.pubkey }}"
+      loop: "{{ interactive_user }}"
   when:
     - user is defined
     - user.use_ssh_key
@@ -21,15 +24,18 @@
   block:
     - name: SSH | Service account SSH directory exists.
       ansible.builtin.file:
-        path: "{{ service_account.home_dir }}/.ssh"
-        owner: "{{ service_account.username }}"
-        group: "{{ service_account.username }}"
+        path: "{{ item.home_dir }}/.ssh"
+        owner: "{{ item.username }}"
+        group: "{{ item.username }}"
         mode: "0700"
         state: directory
+      loop: "{{ service_account }}"
+
     - name: SSH | Service account key login authorized.
       ansible.posix.authorized_key:
-        user: "{{ service_account.username }}"
-        key: "{{ lookup('file', './keys/service_account/id_rsa.pub') }}"
+        user: "{{ item.username }}"
+        key: "{{ item.pubkey }}"
+      loop: "{{ service_account }}"
 
 - name: SSH | SSHD enabled.
   ansible.builtin.service:
