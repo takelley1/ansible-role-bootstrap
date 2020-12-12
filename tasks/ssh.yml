@@ -2,28 +2,13 @@
 
 - name: SSH | SSH configured for interactive user.
   block:
-    - name: SSH | User directories exist.
+    - name: SSH | User SSH directory exists.
       ansible.builtin.file:
         path: "{{ user.home_dir }}/.ssh"
         owner: "{{ user.username }}"
         group: "{{ user.username }}"
         mode: "0700"
         state: directory
-    - name: SSH | User keys present.
-      ansible.builtin.template:
-        dest: "{{ item.dest }}"
-        owner: "{{ item.owner }}"
-        group: "{{ item.owner }}"
-        mode: "{{ item.mode }}"
-      loop:
-        - src: keys/user/id_rsa
-          dest: "{{ user.home_dir }}/.ssh/id_rsa"
-          owner: "{{ user.username }}"
-          mode: "0400"
-        - src: keys/user/id_rsa.pub
-          dest: "{{ user.home_dir }}/.ssh/id_rsa.pub"
-          owner: "{{ user.username }}"
-          mode: "0640"
     - name: SSH | User key login authorized.
       ansible.posix.authorized_key:
         user: "{{ user.username }}"
@@ -34,28 +19,13 @@
 
 - name: SSH | SSH configured for service account.
   block:
-    - name: SSH | Service account directories exist.
+    - name: SSH | Service account SSH directory exists.
       ansible.builtin.file:
         path: "{{ service_account.home_dir }}/.ssh"
         owner: "{{ service_account.username }}"
         group: "{{ service_account.username }}"
         mode: "0700"
         state: directory
-    - name: SSH | Service account keys present.
-      ansible.builtin.template:
-        dest: "{{ item.dest }}"
-        owner: "{{ item.owner }}"
-        group: "{{ item.owner }}"
-        mode: "{{ item.mode }}"
-      loop:
-        - src: keys/service_account/id_rsa
-          dest: "{{ service_account.home_dir }}/.ssh/id_rsa"
-          owner: "{{ service_account.username }}"
-          mode: "0400"
-        - src: keys/service_account/id_rsa.pub
-          dest: "{{ service_account.home_dir }}/.ssh/id_rsa.pub"
-          owner: "{{ service_account.username }}"
-          mode: "0640"
     - name: SSH | Service account key login authorized.
       ansible.posix.authorized_key:
         user: "{{ service_account.username }}"
@@ -70,6 +40,6 @@
 - name: SSH | Root disallowed from SSH login.
   ansible.builtin.lineinfile:
     path: /etc/ssh/sshd_config
-    regexp: ^PermitRootLogin yes
+    regexp: ^\s*PermitRootLogin yes
     line: "#PermitRootLogin yes"
   notify: restart-sshd
