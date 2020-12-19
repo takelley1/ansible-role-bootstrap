@@ -1,5 +1,20 @@
 ---
 
-- name: TIME | Set timezone.
+- name: MISC | Set timezone.
   community.general.timezone:
     name: "{{ timezone }}"
+
+- name: MISC | Insert vi config.
+  ansible.builtin.copy:
+    dest: /etc/vi.exrc
+    owner: root
+    group: "{{ root_group | default('root') }}"
+    mode: "0644"
+    content: |
+      set showmode
+      set noflash
+      set number
+      set ruler
+      set shiftwidth=2
+      set tabstop=2
+      set windowname
