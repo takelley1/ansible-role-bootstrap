@@ -1,7 +1,7 @@
 ---
 
-- name: USERS | Determine the sudo users group name.
-  shell: grep -oE "wheel|sudo" "/etc/group" | head -1
+- name: USERS | Determine sudo group name.
+  shell: cut -f 1 -d ':' "/etc/group" | grep -oE "wheel|sudo" | head -1
   changed_when: false
   register: sudo_group_name
 
