@@ -7,7 +7,10 @@
 #     comment: Foo Bar
 #     home_dir: /home/foo
 #     use_ssh_key: true
-#     pubkey: "{{ lookup('file', './keys/interactive_account/id_rsa.pub') }}"
+#     pubkeys:
+#       - "{{ lookup('file', './keys/interactive_account/id_rsa.pub') }}"
+#       - "{{ lookup('file', './keys/interactive_account/id_rsa2.pub') }}"
+#       - "{{ lookup('file', './keys/interactive_account/id_rsa3.pub') }}"
 
 timezone: America/New_York
 
@@ -15,7 +18,8 @@ service_account:
   - username: ansible
     comment: Ansible service account
     home_dir: /var/lib/ansible
-    pubkey: "{{ lookup('file', './keys/service_account/id_rsa.pub') }}"
+    pubkeys:
+      - "{{ lookup('file', './keys/service_account/id_rsa.pub') }}"
 
 # Selectively include or exclude task files.
 bootstrap_include_misc_tasks: true

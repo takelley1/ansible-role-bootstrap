@@ -4,37 +4,36 @@
   block:
     - name: SSH | User SSH directory exists.
       ansible.builtin.file:
-        path: "{{ item.home_dir }}/.ssh"
-        owner: "{{ item.username }}"
-        group: "{{ item.username }}"
+        path: "{{ item.0.home_dir }}/.ssh"
+        owner: "{{ item.0.username }}"
+        group: "{{ item.0.username }}"
         mode: "0700"
         state: directory
       loop: "{{ interactive_user }}"
 
-    - name: SSH | User key login authorized.
+    - name: SSH | Interactive account key login authorized.
       ansible.posix.authorized_key:
-        user: "{{ item.username }}"
-        key: "{{ item.pubkey }}"
+        user: "{{ item.0.username }}"
+        key: "{{ item.1 }}"
       loop: "{{ interactive_user }}"
   when:
-    - user is defined
-    - user.use_ssh_key
+    - interactive_user is defined
 
 - name: SSH | SSH configured for service account.
   block:
     - name: SSH | Service account SSH directory exists.
       ansible.builtin.file:
-        path: "{{ item.home_dir }}/.ssh"
-        owner: "{{ item.username }}"
-        group: "{{ item.username }}"
+        path: "{{ item.0.home_dir }}/.ssh"
+        owner: "{{ item.0.username }}"
+        group: "{{ item.0.username }}"
         mode: "0700"
         state: directory
       loop: "{{ service_account }}"
 
     - name: SSH | Service account key login authorized.
       ansible.posix.authorized_key:
-        user: "{{ item.username }}"
-        key: "{{ item.pubkey }}"
+        user: "{{ item.0.username }}"
+        key: "{{ item.1 }}"
       loop: "{{ service_account }}"
 
 - name: SSH | SSHD enabled.
