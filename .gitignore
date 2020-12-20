@@ -1,1 +1,2 @@
-**/keys/**/id_*
+**/keys/**/*
+!**/keys/**/README.md
