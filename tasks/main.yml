@@ -1,11 +1,5 @@
 ---
 
-# FreeBSD hosts don't have a group called "root"
-- name: MAIN | Determine root group name.
-  set_fact:
-    root_group: wheel
-  when: ansible_distribution == "FreeBSD"
-
 - name: MAIN | Import users.yml
   import_tasks: users.yml
   when: bootstrap_include_user_tasks
