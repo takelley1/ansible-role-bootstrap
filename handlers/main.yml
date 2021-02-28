@@ -1,6 +1,6 @@
 ---
 
-- name: HANDLERS | SSHD restarted.
+- name: HANDLERS | SSHD restarted
   service:
     name: sshd
     state: restarted

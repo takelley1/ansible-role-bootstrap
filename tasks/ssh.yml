@@ -1,8 +1,8 @@
 ---
 
-- name: SSH | SSH configured for interactive user.
+- name: SSH | SSH configured for interactive user
   block:
-    - name: SSH | User SSH directory exists.
+    - name: SSH | User SSH directory exists
       ansible.builtin.file:
         path: "{{ interactive_account.home_dir }}/.ssh"
         owner: "{{ interactive_account.username }}"
@@ -10,7 +10,7 @@
         mode: "0700"
         state: directory
 
-    - name: SSH | Interactive account key login authorized.
+    - name: SSH | Interactive account key login authorized
       ansible.posix.authorized_key:
         user: "{{ interactive_account.username }}"
         key: "{{ item }}"
@@ -18,9 +18,9 @@
   when:
     - interactive_account is defined
 
-- name: SSH | SSH configured for service account.
+- name: SSH | SSH configured for service account
   block:
-    - name: SSH | Service account SSH directory exists.
+    - name: SSH | Service account SSH directory exists
       ansible.builtin.file:
         path: "{{ service_account.home_dir }}/.ssh"
         owner: "{{ service_account.username }}"
@@ -28,16 +28,16 @@
         mode: "0700"
         state: directory
 
-    - name: SSH | Service account key login authorized.
+    - name: SSH | Service account key login authorized
       ansible.posix.authorized_key:
         user: "{{ service_account.username }}"
         key: "{{ item }}"
       loop: "{{ service_account.pubkeys }}"
 
 # Ubuntu's SSH service is frustratingly called 'ssh' rather than 'sshd'.
-- name: SSH | Determine SSH service name.
+- name: SSH | Determine SSH service name
   block:
-    - name: SSH | Get Linux SSH service name.
+    - name: SSH | Get Linux SSH service name
       shell: >
         systemctl list-units ssh* --type=service --no-pager --no-legend
         | awk -F . '/ssh(d*).service/ {gsub(/ /,"");print $1}'
@@ -46,23 +46,23 @@
       register: sshservice
       when: ansible_system == "Linux"
 
-    - name: SSH | Set Linux SSH service name.
+    - name: SSH | Set Linux SSH service name
       set_fact:
         ssh_service_name: "{{ sshservice.stdout }}"
       when: ansible_system == "Linux"
 
-    - name: SSH | Set FreeBSD SSH service name.
+    - name: SSH | Set FreeBSD SSH service name
       set_fact:
         ssh_service_name: sshd
       when: ansible_system == "FreeBSD"
 
-- name: SSH | SSHD enabled.
+- name: SSH | SSHD enabled
   ansible.builtin.service:
     name: "{{ ssh_service_name }}"
     state: started
     enabled: true
 
-- name: SSH | Root disallowed from SSH login.
+- name: SSH | Root disallowed from SSH login
   ansible.builtin.lineinfile:
     path: /etc/ssh/sshd_config
     regexp: ^\s*PermitRootLogin yes\s*$
