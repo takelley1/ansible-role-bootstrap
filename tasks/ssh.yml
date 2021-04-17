@@ -26,8 +26,7 @@
         mode: "0400"
       when: interactive_account.private_keys is defined
       loop: "{{ interactive_account.private_keys }}"
-  when:
-    - interactive_account is defined
+  when: interactive_account is defined
 
 - name: SSH | SSH configured for service account
   block:
