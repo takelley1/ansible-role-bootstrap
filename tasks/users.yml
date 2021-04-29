@@ -2,7 +2,7 @@
 
 # Ubuntu doesn't have a "wheel" group.
 - name: USERS | Determine sudo group name
-  shell: awk -F ":" '/wheel|sudo/ {print $1}' "/etc/group" | head -1
+  shell: awk -F":" '/wheel|sudo/ {print $1}' /etc/group | head -1
   changed_when: false
   register: sudo_group_name
 

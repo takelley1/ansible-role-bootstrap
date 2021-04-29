@@ -50,15 +50,15 @@
     - name: SSH | Get Linux SSH service name
       shell: >
         systemctl list-units ssh* --type=service --no-pager --no-legend
-        | awk -F . '/ssh(d*).service/ {gsub(/ /,"");print $1}'
+        | awk -F"." '/ssh(d*).service/ {gsub(/ /,"");print $1}' | head -1
       changed_when: false
       failed_when: false
-      register: sshservice
+      register: get_ssh_service_name
       when: ansible_system == "Linux"
 
     - name: SSH | Set Linux SSH service name
       set_fact:
-        ssh_service_name: "{{ sshservice.stdout }}"
+        ssh_service_name: "{{ get_ssh_service_name.stdout }}"
       when: ansible_system == "Linux"
 
     - name: SSH | Set FreeBSD SSH service name
