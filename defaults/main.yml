@@ -18,7 +18,3 @@ service_account:
   home_dir: /var/lib/ansible
   pubkeys:
     - "{{ lookup('file', './keys/service_account/id_rsa.pub') }}"
-
-# Selectively include or exclude task files.
-bootstrap_include_user_tasks: true
-bootstrap_include_ssh_tasks: true
