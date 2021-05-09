@@ -9,7 +9,7 @@ Include /etc/ssh/sshd_config.d/*.conf
 
 Port {{ sshd_Port | default('22') }}
 AddressFamily {{ sshd_AddressFamily | default('inet') }}
-ListenAddress {{ sshd_ListenAddress | default(ansible_default_ipv4.address) }}
+ListenAddress {{ sshd_ListenAddress | default('0.0.0.0') }}
 
 # Logging
 #SyslogFacility default:AUTH
