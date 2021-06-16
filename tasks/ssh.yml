@@ -4,7 +4,7 @@
   block:
     - name: SSH | User SSH directory exists
       ansible.builtin.file:
-        path: "{{ interactive_account.home_dir }}/.ssh"
+        path: "{{ (interactive_account.home_dir, '.ssh') | path_join }}"
         owner: "{{ interactive_account.username }}"
         group: "{{ interactive_account.username }}"
         mode: "0700"
@@ -20,7 +20,7 @@
     - name: SSH | Interactive account private keys deployed
       ansible.builtin.copy:
         src: "{{ item }}"
-        dest: "{{ interactive_account.home_dir }}/.ssh/{{ item | basename }}"
+        dest: "{{ (interactive_account.home_dir, '.ssh', (item | basename)) | path_join }}"
         owner: "{{ interactive_account.username }}"
         group: "{{ interactive_account.username }}"
         mode: "0400"
@@ -32,7 +32,7 @@
   block:
     - name: SSH | Service account SSH directory exists
       ansible.builtin.file:
-        path: "{{ service_account.home_dir }}/.ssh"
+        path: "{{ (service_account.home_dir, '.ssh') | path_join }}"
         owner: "{{ service_account.username }}"
         group: "{{ service_account.username }}"
         mode: "0700"
