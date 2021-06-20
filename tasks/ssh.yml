@@ -57,12 +57,12 @@
       when: ansible_system == "Linux"
 
     - name: SSH | Set Linux SSH service name
-      set_fact:
+      ansible.builtin.set_fact:
         ssh_service_name: "{{ get_ssh_service_name.stdout }}"
       when: ansible_system == "Linux"
 
     - name: SSH | Set FreeBSD SSH service name
-      set_fact:
+      ansible.builtin.set_fact:
         ssh_service_name: sshd
       when: ansible_system == "FreeBSD"
 
