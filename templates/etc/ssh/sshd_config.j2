@@ -16,7 +16,7 @@ ListenAddress {{ sshd_ListenAddress | default('0.0.0.0') }}
 #LogLevel default:INFO
 LogLevel {{ sshd_LogLevel | default('INFO') }}
 
-{% if sshd_AllowUsers is defined -%}
+{% if sshd_AllowUsers is defined and sshd_AllowUsers !="" -%}
 AllowUsers {{ sshd_AllowUsers }}
 {% endif %}
 
