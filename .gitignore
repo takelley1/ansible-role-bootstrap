@@ -1,2 +1,12 @@
+*.bak
+*.cer
+*.cert
+*.crt
+*.csr
+*.key
+*.pem
+*.srl
+/molecule/default
+public
 **/keys/**/*
 !**/keys/**/README.md
