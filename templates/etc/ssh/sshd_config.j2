@@ -5,7 +5,8 @@
 # sshd_config(5) for more information.
 # This sshd was compiled with PATH=/usr/bin:/bin:/usr/sbin:/sbin
 
-Include /etc/ssh/sshd_config.d/*.conf
+# Not supported in older versions of sshd
+# Include /etc/ssh/sshd_config.d/*.conf
 
 Port {{ sshd_Port | default('22') }}
 AddressFamily {{ sshd_AddressFamily | default('inet') }}
