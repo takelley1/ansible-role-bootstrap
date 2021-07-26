@@ -44,28 +44,6 @@
         key: "{{ item }}"
       loop: "{{ service_account.pubkeys }}"
 
-# Ubuntu's SSH service is frustratingly called 'ssh' rather than 'sshd'.
-- name: SSH | Determine SSH service name
-  block:
-    - name: SSH | Get Linux SSH service name
-      shell: >
-        systemctl list-units ssh* --type=service --no-pager --no-legend
-        | awk -F"." '/ssh(d*).service/ {gsub(/ /,"");print $1}' | head -1
-      changed_when: false
-      failed_when: false
-      register: get_ssh_service_name
-      when: ansible_system == "Linux"
-
-    - name: SSH | Set Linux SSH service name
-      ansible.builtin.set_fact:
-        ssh_service_name: "{{ get_ssh_service_name.stdout }}"
-      when: ansible_system == "Linux"
-
-    - name: SSH | Set FreeBSD SSH service name
-      ansible.builtin.set_fact:
-        ssh_service_name: sshd
-      when: ansible_system == "FreeBSD"
-
 - name: SSH | SSHD enabled
   ansible.builtin.service:
     name: "{{ ssh_service_name }}"
@@ -79,4 +57,5 @@
     owner: root
     mode: "0644"
     validate: sshd -t -f %s
+  tags: bootstrap_sshd_config
   notify: restart-sshd
