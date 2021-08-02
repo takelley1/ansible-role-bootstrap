@@ -19,6 +19,7 @@
         group: "{{ interactive_account.username }}"
         groups: "{{ sudo_group_name.stdout }}"
         home: "{{ interactive_account.home_dir }}"
+        shell: "{{ interactive_account.shell | default(omit) }}"
   when: interactive_account is defined
 
 - name: USERS | Service account exists
@@ -34,6 +35,7 @@
         group: "{{ service_account.username }}"
         groups: "{{ sudo_group_name.stdout }}"
         home: "{{ service_account.home_dir }}"
+        shell: "{{ service_account.shell | default(omit) }}"
 
 - name: USERS | Check for sudo
   shell: hash sudo
