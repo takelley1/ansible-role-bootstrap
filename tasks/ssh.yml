@@ -46,7 +46,7 @@
 
 - name: SSH | SSHD enabled
   ansible.builtin.service:
-    name: "{{ ssh_service_name }}"
+    name: sshd
     state: started
     enabled: true
 
