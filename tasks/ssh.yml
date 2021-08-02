@@ -44,6 +44,16 @@
         key: "{{ item }}"
       loop: "{{ service_account.pubkeys }}"
 
+    - name: SSH | Service account private keys deployed
+      ansible.builtin.copy:
+        src: "{{ item }}"
+        dest: "{{ (service_account.home_dir, '.ssh', (item | basename)) | path_join }}"
+        owner: "{{ service_account.username }}"
+        group: "{{ service_account.username }}"
+        mode: "0400"
+      when: service_account.private_keys is defined
+      loop: "{{ service_account.private_keys }}"
+
 - name: SSH | SSHD enabled
   ansible.builtin.service:
     name: sshd
