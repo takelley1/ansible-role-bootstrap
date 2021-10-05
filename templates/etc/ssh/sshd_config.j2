@@ -112,8 +112,8 @@ PermitTunnel {{ sshd_PermitTunnel | default('no') }}
 AcceptEnv {{ sshd_AcceptEnv | default('LANG LC_*') }}
 Banner {{ sshd_Banner | default('none') }}
 
-{% if ansible_system == "Linux" %}
+{% if ansible_facts.system == "Linux" %}
 Subsystem  sftp /usr/lib/sftp-server
-{% elif ansible_system == "FreeBSD" %}
+{% elif ansible_facts.system == "FreeBSD" %}
 Subsystem  sftp /usr/libexec/sftp-server
 {% endif -%}

@@ -49,13 +49,13 @@
       ansible.builtin.set_fact:
         sudoers_path: /etc/sudoers
         root_group: root
-      when: ansible_system == "Linux"
+      when: ansible_facts.system == "Linux"
 
     - name: USERS | Set FreeBSD sudoers facts
       ansible.builtin.set_fact:
         sudoers_path: /usr/local/etc/sudoers
         root_group: wheel
-      when: ansible_system == "FreeBSD"
+      when: ansible_facts.system == "FreeBSD"
 
 - name: MAIN | Set facts
   block:
